@@ -1,6 +1,9 @@
 package com.workouttracker.model;
 
 import jakarta.validation.constraints.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
 import java.time.LocalDateTime;
 
 /**
@@ -10,8 +13,10 @@ import java.time.LocalDateTime;
  * @version 1.0
  * @since Milestone 2
  */
+@Table("users")
 public class User {
 
+    @Id
     private Long id;
 
     /**

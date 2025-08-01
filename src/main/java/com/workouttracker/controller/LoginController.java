@@ -65,6 +65,7 @@ public class LoginController {
         if (userService.authenticateUser(loginPrincipal)) {
             session.setAttribute("loggedIn", true);
             session.setAttribute("currentUser", loginPrincipal.getUsername());
+            session.setAttribute("userId", loginPrincipal.getUser().getId()); // ADD THIS LINE
             return "redirect:/dashboard";
         }
 

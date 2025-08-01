@@ -2,116 +2,63 @@ package com.workouttracker.service;
 
 import com.workouttracker.model.LoginPrincipal;
 import com.workouttracker.model.User;
+import com.workouttracker.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Simple user management service for Milestone 2.
- * Handles user registration and lookup using in-memory storage.
- * Database integration will be added in Milestone 4.
+ * User management service using database.
+ * Handles user registration and authentication.
  *
  * @author Brandon Ortega, Aaron Starley
- * @version 1.0
- * @since Milestone 2
+ * @version 2.0
+ * @since Milestone 4
  */
 @Service
-public class UserService implements UserBusinessServiceInterface{
+public class UserService implements UserBusinessServiceInterface {
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
-     * In-memory storage for users (temporary for Milestone 2)
+     * Authenticates user against database.
+     *
+     * @param loginModel the login credentials
+     * @return true if authentication successful
      */
-    private List<User> users = new ArrayList<>();
-
-    /**
-     * Simple ID generator for new users
-     */
-    private Long nextId = 1L;
-
-    /**
-     * Constructor that initializes service with demo user for testing.
-     */
-    public UserService() {
-        // Add demo user for testing
-        User demo = new User();
-        demo.setId(nextId++);
-        demo.setFirstName("Demo");
-        demo.setLastName("User");
-        demo.setEmail("demo@test.com");
-        demo.setUsername("demo");
-        demo.setPassword("password123");
-        demo.setCreatedDate(LocalDateTime.now());
-        demo.setActive(true);
-        users.add(demo);
-
-        System.out.println("UserService initialized with demo user");
-    }
-
     @Override
     public boolean authenticateUser(LoginPrincipal loginModel) {
-        return "demo".equals(loginModel.getUsername()) &&
-                "password123".equals(loginModel.getPassword());
+        User user = userRepository.findByUsername(loginModel.getUsername());
+        if (user != null && user.getPassword().equals(loginModel.getPassword())) {
+            loginModel.setUser(user);
+            loginModel.setAuthenticated(true);
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Registers a new user in the system.
-     * Checks for duplicate usernames before registration.
+     * Registers new user in database.
      *
      * @param user the user to register
-     * @return the registered user with assigned ID
-     * @throws RuntimeException if username already exists
+     * @return true if registration successful
+     * @throws RuntimeException if username or email already exists
      */
     @Override
     public boolean registerUser(User user) {
-        System.out.println("Registered: " + user.getUsername());
-        return true;
-    }
-    /*public User registerUser(User user) {
-        if (findByUsername(user.getUsername()) != null) {
+        // Check if username already exists
+        if (userRepository.findByUsername(user.getUsername()) != null) {
             throw new RuntimeException("Username already exists");
         }
 
-        // Set system fields
-        user.setId(nextId++);
-        user.setCreatedDate(LocalDateTime.now());
-        user.setActive(true);
+        // Check if email already exists
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new RuntimeException("Email already exists");
+        }
 
-        // Add to list
-        users.add(user);
-
-        System.out.println("User registered: " + user.getUsername());
-        return user;
-    }*/
-
-    /**
-     * Finds a user by username.
-     *
-     * @param username the username to search for
-     * @return the user if found, null otherwise
-     */
-    public User findByUsername(String username) {
-        return users.stream()
-                .filter(u -> u.getUsername().equalsIgnoreCase(username))
-                .findFirst()
-                .orElse(null);
-    }
-
-    /**
-     * Gets all registered users.
-     *
-     * @return list of all users
-     */
-    public List<User> getAllUsers() {
-        return new ArrayList<>(users);
-    }
-
-    /**
-     * Gets the total number of registered users.
-     *
-     * @return user count
-     */
-    public int getUserCount() {
-        return users.size();
+        // Save new user
+        userRepository.save(user);
+        System.out.println("User registered in database: " + user.getUsername());
+        return true;
     }
 }
