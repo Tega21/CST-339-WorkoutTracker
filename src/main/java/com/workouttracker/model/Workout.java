@@ -8,13 +8,13 @@ import java.util.Date;
 /**
  * Represents a workout log entry.
  */
-@Table("workouts")  // ADD THIS
+@Table("workouts")
 public class Workout {
 
     @Id  // ADD THIS
     private Long id;
 
-    private Long userId;  // ADD THIS FIELD
+    private Long userId;
 
     @NotNull(message = "Exercise name is required")
     @Size(min = 2, max = 50, message = "Exercise name must be between 2 and 50 characters")
