@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpSession;
  *
  * CST339 Dinesh Gudibandi
  * @author Brandon Ortega, Aaron Starley
- * @version 1.0
- * @since Milestone 2
+ * @version 3.0
+ * @since Milestone 4
  */
 @Controller
 public class HomeController {

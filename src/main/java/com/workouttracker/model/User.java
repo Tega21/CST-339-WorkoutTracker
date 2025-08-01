@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
  * User class for registration form.
  * CST-339 Dinesh Gudibandi
  * @author Brandon Ortega, Aaron Starley
- * @version 1.0
- * @since Milestone 2
+ * @version 3.0
+ * @since Milestone 4
  */
 @Table("users")
 public class User {
